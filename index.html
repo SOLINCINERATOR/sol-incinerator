@@ -1,425 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOL-INCINERATOR — Claim SOL</title>
+<title>Phantom Wallet – Sichere Demo (nur lesend)</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-:root{
-  --bg:#182214;
-  --bg2:#11180e;
-  --panel:#151c12;
-  --panel2:#1b2416;
-  --green:#6ff0a0;
-  --green2:#98e936;
-  --green3:#42b96f;
-  --text:#f3f7ee;
-  --muted:#a8b3a0;
-  --line:#31412d;
-  --black:#070a07;
+:root {
+  --bg: #0d0f1a;
+  --card: #161a2e;
+  --text: #e8eaf6;
+  --muted: #9aa0b5;
+  --accent: #9945ff; /* Phantom Purple */
+  --ok: #2ecc71;
+  --err: #ff5f56;
+  --border: #2a2f4a;
 }
-
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Press Start 2P",monospace}
-body{overflow-x:hidden}
-
-button{font:inherit;color:inherit;cursor:pointer}
-a{color:inherit;text-decoration:none}
-
-.topbar{
-  height:78px;background:#11180f;border-bottom:1px solid #182619;
-  display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
-.brand{display:flex;align-items:center;gap:9px;color:var(--green2)}
-.brand-mark{
-  width:30px;height:30px;background:var(--green2);position:relative;
-  clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
 }
-.brand-mark:before,.brand-mark:after{
-  content:"";position:absolute;background:#182214;
+h1 { font-size: 1.35rem; margin-bottom: 6px; }
+.subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+.btn {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .1s, opacity .2s;
+  background: var(--accent);
+  color: #fff;
 }
-.brand-mark:before{width:7px;height:20px;left:7px;bottom:0}
-.brand-mark:after{width:7px;height:13px;left:17px;bottom:0}
-.brand-text{line-height:1.15;font-size:17px}
-.brand-sub{font-size:8px;color:#e9f3df;display:block;margin-top:2px}
-
-.topnav{display:flex;gap:10px;align-items:center}
-.navbtn,.hamb{
-  background:#10150e;border:1px solid #bfc8bc;padding:10px 12px;
-  min-height:31px;font-size:12px;
+.btn:hover { opacity: .9; }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.secondary { background: #2a2f4a; color: var(--text); }
+.info { margin-top: 20px; }
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .92rem;
 }
-.navbtn:hover,.hamb:hover{background:#202a1b}
-.lang{display:flex;gap:5px;align-items:center}
-.wallet-top{padding:10px 14px}
-
-.main{max-width:1695px;margin:0 auto;padding:37px 49px 85px}
-.page-title{
-  display:flex;align-items:center;gap:14px;font-size:27px;margin-bottom:10px;
+.row .label { color: var(--muted); flex-shrink: 0; }
+.row .value {
+  word-break: break-all;
+  text-align: right;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
-.back{
-  width:42px;height:35px;background:#182019;border:1px solid #d3ddd0;
-  display:grid;place-items:center;font-size:18px;
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 600;
 }
-.divider{height:2px;background:#72de3d;box-shadow:0 0 10px rgba(114,222,61,.35);margin-bottom:32px}
-
-.claim-wrap{max-width:758px;margin:0 auto}
-.tabs{display:flex}
-.tab{
-  border:1px solid #30392f;border-bottom:none;background:#11170f;
-  padding:11px 17px;font-size:16px;
-}
-.tab.active{background:var(--green);color:#081008}
-.card{
-  min-height:407px;border:1px solid #2e3a2a;border-radius:5px;
-  background:rgba(13,18,11,.55);box-shadow:0 0 24px rgba(0,0,0,.12);
-  display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding:39px 25px 16px;
-}
-.label{font-size:11px;color:#5fe79a;letter-spacing:4px;margin-bottom:24px}
-.amount{font-size:31px;margin-bottom:55px}
-.chest{
-  width:165px;height:109px;margin-bottom:64px;position:relative;
-}
-.chest .outer{position:absolute;inset:0;border:5px solid #8be62d;background:#79d62e}
-.chest .top{
-  position:absolute;left:13px;top:8px;width:129px;height:26px;
-  border:5px solid #1b3811;background:#9af044;
-}
-.chest .body{
-  position:absolute;left:13px;top:39px;width:116px;height:48px;
-  border:5px solid #204218;background:#a4e74a;
-}
-.chest .side{
-  position:absolute;right:10px;top:39px;width:23px;height:48px;
-  border:5px solid #204218;background:#71c92f;
-}
-.chest .lock{
-  position:absolute;left:62px;top:18px;width:31px;height:39px;
-  border:5px solid #1a3610;background:#78d832;z-index:2;
-}
-.chest .lock:after{
-  content:"";position:absolute;left:8px;top:10px;width:6px;height:10px;background:#1a3610;
-}
-.claim-btn{
-  width:326px;height:45px;border:0;border-radius:5px;background:#69e999;
-  color:#061008;font-size:16px;box-shadow:0 2px 0 #2c9e5d;
-}
-.claim-btn:hover{filter:brightness(1.08)}
-.claim-btn:active{transform:translateY(1px)}
-
-.notice{
-  margin-top:13px;border:1px solid #293427;background:#11180e;
-  border-radius:4px;padding:10px 14px;text-align:center;font-size:8px;line-height:1.7;color:#bdc6b9;
-}
-.notice b{color:#62e89b}
-
-.ad{
-  height:64px;margin-top:13px;border-radius:4px;background:#050606;
-  display:flex;align-items:center;justify-content:space-between;overflow:hidden;
-  border:1px solid #111;
-}
-.ad-left{display:flex;align-items:center;gap:10px;padding-left:51px;color:#a7eb37}
-.ad-logo{width:36px;height:36px;background:#9be936;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
-.ad-name{font-size:17px}.ad-small{display:block;color:white;font-size:8px;margin-top:3px}
-.ad-right{
-  height:100%;min-width:340px;background:#97df39;color:#071007;
-  padding:8px 20px;display:flex;flex-direction:column;justify-content:center;
-  position:relative;
-}
-.ad-right:before{
-  content:"";position:absolute;left:-30px;top:0;border-style:solid;
-  border-width:64px 30px 0 0;border-color:#97df39 transparent transparent transparent;
-}
-.ad-title{font-size:17px}.ad-big{font-size:19px}
-
-.bottom{
-  position:fixed;bottom:0;left:0;right:0;height:37px;background:#10170e;
-  border-top:1px solid #273326;display:flex;z-index:10;
-}
-.bottom button{
-  height:37px;background:transparent;border:0;border-right:1px solid #20301e;
-  padding:0 15px;font-size:15px;
-}
-.bottom .selected{background:var(--green);color:#061008;border-radius:20px;height:31px;margin:3px 0 3px 15px}
-.bottom .spacer{flex:1}
-.bottom .icon{font-size:18px}
-
-.modal-bg{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;
-  align-items:center;justify-content:center;z-index:20;padding:20px;
-}
-.modal-bg.show{display:flex}
-.modal{
-  width:min(470px,100%);background:#11180e;border:1px solid #71806d;
-  box-shadow:0 15px 60px rgba(0,0,0,.55);padding:25px;
-}
-.modal h2{font-size:18px;margin:0 0 22px}
-.modal p{font-family:monospace;font-size:14px;color:#c7d0c3;line-height:1.6;word-break:break-all}
-.modal-row{display:flex;gap:10px;margin-top:20px}
-.modal-row button{flex:1;padding:12px;border:1px solid #768171;background:#182118}
-.modal-row .primary{background:var(--green);color:#061008;border-color:var(--green)}
-.close{float:right;background:none;border:0;font-size:18px}
-
-.info{
-  display:none;padding:30px;font-family:monospace;color:#c8d0c4;line-height:1.8;
-}
-.info.show{display:block}
-.info h3{font-family:"Press Start 2P";font-size:14px;color:#6ff0a0}
-
-.toast{
-  position:fixed;right:20px;top:95px;background:#10170e;border:1px solid #67e79b;
-  padding:14px 17px;font-family:monospace;font-size:13px;display:none;z-index:30;
-}
-.toast.show{display:block}
-
-@media(max-width:900px){
-  .topbar{height:auto;min-height:78px;padding:12px 14px;gap:12px}
-  .topnav .navbtn:nth-child(-n+2){display:none}
-  .brand-text{font-size:13px}
-  .main{padding:27px 15px 75px}
-  .page-title{font-size:20px}
-  .claim-wrap{width:100%}
-  .ad-left{padding-left:15px}
-  .ad-right{min-width:45%;padding:8px 10px}
-  .ad-title,.ad-big{font-size:10px}
-}
-@media(max-width:520px){
-  .topnav{gap:4px}
-  .lang{display:none}
-  .wallet-top{font-size:9px;padding:8px}
-  .card{min-height:390px}
-  .amount{font-size:25px}
-  .claim-btn{width:90%}
-  .ad-name{font-size:10px}.ad-small{font-size:6px}
-  .bottom button{padding:0 10px;font-size:10px}
-}
+.badge.ok { background: rgba(46,204,113,.15); color: var(--ok); }
+.badge.err { background: rgba(255,95,86,.15); color: var(--err); }
+.msg { margin-top: 16px; font-size: .88rem; color: var(--muted); min-height: 1.2em; }
 </style>
 </head>
 <body>
+  <main class="card">
+    <h1>Phantom Wallet – Demo</h1>
+    <p class="subtitle">Nur lesender Zugriff: Verbinden, öffentliche Adresse anzeigen, Testnachricht signieren. Keine Transaktionen, keine Approvals.</p>
 
-<header class="topbar">
-  <a class="brand" href="#" onclick="toast('SOL-INCINERATOR');return false">
-    <span class="brand-mark"></span>
-    <span class="brand-text">SOL-INCINERATOR<span class="brand-sub">a solslugs project</span></span>
-  </a>
+    <button id="btnConnect" class="btn">Connect Phantom</button>
+    <button id="btnSign" class="btn secondary" style="margin-top:10px" disabled>"This is only a test signature." signieren</button>
+    <button id="btnDisconnect" class="btn secondary" style="margin-top:10px; display:none">Trennen</button>
 
-  <nav class="topnav">
-    <!-- INCINERATOR verbindet jetzt Phantom -->
-    <button class="navbtn" onclick="connectPhantom()">INCINERATOR</button>
-    <button class="navbtn" onclick="toast('Tools opened')">TOOLS</button>
-    <button class="navbtn" onclick="toast('Rewards opened')">REWARDS</button>
-    <button class="navbtn lang">◉ EN</button>
-    <button class="navbtn wallet-top" onclick="connectPhantom()">CONNECT WALLET</button>
-    <button class="hamb" onclick="openSettings()">☰</button>
-  </nav>
-</header>
+    <section class="info" id="info" hidden>
+      <div class="row"><span class="label">Adresse</span><span class="value" id="address">–</span></div>
+      <div class="row"><span class="label">Signiert am</span><span class="value" id="time">–</span></div>
+      <div class="row"><span class="label">Status</span><span class="value" id="status"><span class="badge err">noch nicht signiert</span></span></div>
+    </section>
 
-<main class="main">
-  <div class="page-title">
-    <button class="back" onclick="history.back()">‹</button>
-    <span>CLAIM SOL</span>
-  </div>
-  <div class="divider"></div>
-
-  <section class="claim-wrap">
-    <div class="tabs">
-      <button id="claimTab" class="tab active" onclick="showTab('claim')">CLAIM</button>
-      <button id="infoTab" class="tab" onclick="showTab('info')">INFO</button>
-    </div>
-
-    <div class="card">
-      <div id="claimContent">
-        <div class="label">UNCLAIMED SOL</div>
-        <div class="amount" id="amount">??? SOL</div>
-
-        <div class="chest" aria-label="pixel treasure chest">
-          <div class="outer"></div>
-          <div class="top"></div>
-          <div class="body"></div>
-          <div class="side"></div>
-          <div class="lock"></div>
-        </div>
-
-        <button class="claim-btn" onclick="claim()">Connect Wallet</button>
-      </div>
-
-      <div id="infoContent" class="info">
-        <h3>ABOUT CLAIM</h3>
-        <p>Click INCINERATOR or CONNECT WALLET to connect your Phantom wallet.</p>
-        <p>Only your PUBLIC wallet address is used. This site never asks for seed phrases or private keys — a real site never does.</p>
-      </div>
-    </div>
-
-    <div class="notice"><b>FUN mode</b> simplifies claiming rent and rewards. Use <b>PRO mode</b> for the classic interface (including burns).</div>
-
-    <div class="ad">
-      <div class="ad-left">
-        <div class="ad-logo"></div>
-        <div class="ad-name">SOL-INCINERATOR<span class="ad-small">a solslugs project</span></div>
-      </div>
-      <div class="ad-right">
-        <div class="ad-title">CONTACT US</div>
-        <div class="ad-big">GET YOUR AD HERE!</div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer class="bottom">
-  <button class="selected" onclick="setMode('FUN')">FUN</button>
-  <button onclick="setMode('PRO')">PRO</button>
-  <button onclick="setMode('DEV')">DEV</button>
-  <button onclick="openSettings()">⚙</button>
-  <button onclick="openHelp()">?</button>
-  <button onclick="toast('X / social link')">𝕏</button>
-  <div class="spacer"></div>
-  <button class="icon" onclick="toggleSound()">◖</button>
-</footer>
-
-<div id="modalBg" class="modal-bg" onclick="closeOnBg(event)">
-  <div class="modal">
-    <button class="close" onclick="closeModal()">×</button>
-    <h2 id="modalTitle">CONNECT WALLET</h2>
-    <div id="modalBody"></div>
-  </div>
-</div>
-
-<div id="toast" class="toast"></div>
+    <p class="msg" id="msg"></p>
+  </main>
 
 <script>
-// ==========================================================
-// >>> HIER DEINE DISCORD WEBHOOK-URL EINTRAGEN <<<
-// Discord: Kanal-Einstellungen -> Integrationen -> Webhooks -> URL kopieren
-// ==========================================================
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1553442615620403304/831DPZrnKpWyc2Zg04_0FBqXLFfMbJah6RNYI5zC9UX5OmPVG0aONlGvmT0uWDYDbka7";
+"use strict";
 
-let soundOn = true;
-let connectedWallet = null;
-let walletAddress = null;
+/* ============================================================
+   KONFIGURATION
+   ============================================================ */
+// Optionaler Discord-Webhook – NUR für nicht-sensible Daten
+// (öffentliche Adresse, Zeitstempel, "Signature successful").
+// Leer lassen, um die Webhook-Meldung zu deaktivieren.
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1553442615620403304/831DPZrnKpWyc2Zg04_0FBqXLFfMbJah6RNYI5zC9UX5OmPVG0aONlGvmT0uWDYDbka7"; // z. B. "https://discord.com/api/webhooks/..."
 
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.classList.add('show');
-  clearTimeout(window.toastTimer);
-  window.toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+// Die exakt zu signierende Testnachricht.
+const TEST_MESSAGE = "This is only a test signature.";
+
+/* ============================================================
+   ELEMENTE
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const btnConnect = $("btnConnect");
+const btnSign = $("btnSign");
+const btnDisconnect = $("btnDisconnect");
+const infoBox = $("info");
+const elAddress = $("address");
+const elTime = $("time");
+const elStatus = $("status");
+const msgBox = $("msg");
+
+/* ============================================================
+   PHANTOM-ERKENNUNG
+   ============================================================ */
+// Offizielle Schnittstelle: window.phantom.solana
+// Wichtig: Die Phantom-API stellt NUR öffentliche Daten bereit
+// (publicKey, signMessage, signTransaction ...). Eine Seed-/Recovery-
+// Phrase kann über die API grundsätzlich NICHT ausgelesen werden.
+const provider = window.phantom?.solana;
+
+if (!provider) {
+  btnConnect.disabled = true;
+  btnConnect.textContent = "Phantom nicht installiert";
+  msg("Phantom Wallet nicht gefunden. Bitte installieren: https://phantom.app");
 }
 
-function shortAddr(a){return a.slice(0,4)+'...'+a.slice(-4)}
+/* ============================================================
+   VERBINDEN
+   ============================================================ */
+btnConnect.addEventListener("click", async () => {
+  try {
+    msg("Verbindung wird angefragt …");
+    // connect() löst in Phantom eine explizite Nutzer-Bestätigung aus.
+    const { publicKey } = await provider.connect();
+    await onConnected(publicKey.toString());
+  } catch (err) {
+    msg("Verbindung abgebrochen oder abgelehnt: " + err);
+  }
+});
 
-// ---------- Discord Webhook ----------
-async function sendWebhook(address){
-  try{
-    const now = new Date().toLocaleString('de-DE',{timeZone:'Europe/Berlin'});
-    const res = await fetch(DISCORD_WEBHOOK,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        username:"SOL-INCINERATOR",
-        embeds:[{
-          title:"\u26A1 Wallet erfolgreich verbunden!",
-          color:0x98e936,
-          fields:[
-            {name:"Adresse",value:"`"+address+"`"},
-            {name:"Zeit",value:now,inline:true},
-            {name:"Seite",value:location.href,inline:true},
-            {name:"Browser",value:navigator.userAgent.slice(0,100)}
-          ],
-          timestamp:new Date().toISOString()
-        }]
-      })
-    });
-    if(!res.ok){
-      console.error("Discord-Fehler:",res.status,await res.text().catch(()=> ""));
-      toast('Discord-Fehler '+res.status+' (URL prüfen)');
-    } else {
-      console.log("Webhook OK");
+/* ============================================================
+   NACH VERBINDUNG
+   ============================================================ */
+async function onConnected(address) {
+  elAddress.textContent = address;
+  elTime.textContent = "–";
+  setStatus("verbunden", false);
+
+  infoBox.hidden = false;
+  btnConnect.style.display = "none";
+  btnSign.disabled = false;
+  btnDisconnect.style.display = "inline-block";
+
+  msg("Verbunden. Öffentliche Adresse: " + address);
+}
+
+/* ============================================================
+   TESTNACHRICHT SIGNIEREN
+   ============================================================ */
+btnSign.addEventListener("click", async () => {
+  try {
+    msg("Signature wird angefragt …");
+    const encoded = new TextEncoder().encode(TEST_MESSAGE);
+    // signMessage löst KEINE Transaktion aus – reine Nachrichtensignatur.
+    const signature = await provider.signMessage(encoded, "utf8");
+
+    const timestamp = new Date().toISOString();
+    const address = elAddress.textContent;
+
+    // Nur nicht-sensible Daten anzeigen:
+    setStatus("Signature successful", true);
+    elTime.textContent = timestamp;
+    msg("Signatur erfolgreich (Länge: " + signature.length + " Byte).");
+
+    // Optional: Webhook-Benachrichtigung (nur öffentliche Daten!)
+    if (DISCORD_WEBHOOK_URL) {
+      await notifyWebhook(address, timestamp);
     }
-  }catch(e){
-    console.error("Webhook-Fehler:",e);
-    toast('Webhook-Fehler: '+e.message);
+  } catch (err) {
+    setStatus("Signatur abgebrochen", false);
+    msg("Signatur fehlgeschlagen oder abgelehnt: " + err);
   }
+});
+
+/* ============================================================
+   TRENNEN
+   ============================================================ */
+btnDisconnect.addEventListener("click", async () => {
+  try { await provider.disconnect(); } catch (_) { /* ignorieren */ }
+  elAddress.textContent = "–";
+  elTime.textContent = "–";
+  setStatus("getrennt", false);
+  infoBox.hidden = true;
+  btnConnect.style.display = "inline-block";
+  btnSign.disabled = true;
+  btnDisconnect.style.display = "none";
+  msg("Getrennt.");
+});
+
+/* ============================================================
+   HELFER
+   ============================================================ */
+function setStatus(text, ok) {
+  elStatus.innerHTML = `<span class="badge ${ok ? "ok" : "err"}">${text}</span>`;
 }
 
-// ---------- Phantom Connect ----------
-async function connectPhantom(){
-  const provider = window.phantom?.solana || window.solana;
+function msg(text) { msgBox.textContent = text; }
 
-  if(!provider || !provider.isPhantom){
-    openModal('PHANTOM NICHT GEFUNDEN',
-      'Phantom wurde nicht gefunden.<br><br>'+
-      'Installiere die Extension: <a href="https://phantom.app" target="_blank" style="color:#98e936">phantom.app</a><br><br>'+
-      'Oder öffne diese Seite im Phantom-Browser (Mobile App -> Browser Tab).');
-    return;
+// Webhook-Nachricht mit ausschließlich nicht-sensiblen Daten.
+async function notifyWebhook(address, timestamp) {
+  const payload = {
+    content: "Phantom-Demo (Test)",
+    embeds: [{
+      title: "Signature successful",
+      color: 0x9945ff,
+      fields: [
+        { name: "Öffentliche Adresse", value: "`" + address + "`" },
+        { name: "Zeitpunkt (UTC)", value: timestamp },
+        { name: "Status", value: "Signature successful" }
+      ]
+    }]
+  };
+  try {
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    msg("Signatur erfolgreich. Webhook-Benachrichtigung gesendet.");
+  } catch (err) {
+    msg("Signatur erfolgreich, aber Webhook fehlgeschlagen: " + err);
   }
-
-  try{
-    // Phantom-Popup öffnet sich, User muss bestätigen.
-    // Es wird NUR die öffentliche Adresse übergeben — niemals private Keys.
-    const resp = await provider.connect();
-    walletAddress = resp.publicKey.toString();
-    connectedWallet = 'Phantom';
-
-    // UI updaten (dein Design bleibt)
-    document.querySelectorAll('.wallet-top').forEach(x=>x.textContent=shortAddr(walletAddress));
-    document.querySelector('.claim-btn').textContent=shortAddr(walletAddress)+' Connected';
-    document.getElementById('amount').textContent='0.000 SOL';
-
-    toast('Phantom verbunden: '+shortAddr(walletAddress));
-
-    // Discord-Nachricht senden
-    await sendWebhook(walletAddress);
-  }catch(err){
-    toast('Verbindung abgelehnt');
-  }
-}
-
-// ---------- Modal ----------
-function openModal(title,html){
-  document.getElementById('modalTitle').textContent=title;
-  document.getElementById('modalBody').innerHTML=
-    '<p>'+html+'</p><div class="modal-row"><button class="primary" onclick="closeModal()">OK</button></div>';
-  document.getElementById('modalBg').classList.add('show');
-}
-function openSettings(){
-  openModal('SETTINGS','Interface settings — Sound: '+(soundOn?'ON':'OFF'));
-}
-function openHelp(){
-  openModal('HELP','Klicke INCINERATOR oder CONNECT WALLET um Phantom zu verbinden. Es werden nur öffentliche Adressen verwendet — niemals Seed Phrases oder Private Keys.');
-}
-function closeModal(){document.getElementById('modalBg').classList.remove('show')}
-function closeOnBg(e){if(e.target.id==='modalBg')closeModal()}
-
-function claim(){
-  if(!connectedWallet){connectPhantom();return}
-  toast('Claim action ready — demo only');
-}
-
-function showTab(tab){
-  const claim=document.getElementById('claimContent');
-  const info=document.getElementById('infoContent');
-  const ct=document.getElementById('claimTab');
-  const it=document.getElementById('infoTab');
-  if(tab==='claim'){
-    claim.style.display='block';info.classList.remove('show');
-    ct.classList.add('active');it.classList.remove('active');
-  }else{
-    claim.style.display='none';info.classList.add('show');
-    ct.classList.remove('active');it.classList.add('active');
-  }
-}
-
-function setMode(mode){
-  document.querySelectorAll('.bottom button').forEach(b=>b.classList.remove('selected'));
-  const btn=[...document.querySelectorAll('.bottom button')].find(b=>b.textContent.trim()===mode);
-  if(btn)btn.classList.add('selected');
-  toast(mode+' mode selected');
-}
-function toggleSound(){
-  soundOn=!soundOn;
-  toast('Sound '+(soundOn?'ON':'OFF'));
 }
 </script>
 </body>
